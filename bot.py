@@ -1,266 +1,295 @@
-# bot.py
-from tracker import Tracker
+# bot.py — FINAL WIZARD VERSION (NO FOLDERS, PRODUCTION SAFE)
+
 import os
 import json
 import random
 import threading
 import time
 from typing import Any, Optional
+
 from flask import Flask, request, abort
 from telebot import TeleBot, types
 from deep_translator import GoogleTranslator
 from dotenv import load_dotenv
 
-tracker = Tracker()
-
-
-# ---------------- Environment ----------------
+# ==================================================
+# ENVIRONMENT
+# ==================================================
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
-
-PUBLIC_URL_PATH = "/etc/secrets/PUBLIC_URL"
-if os.path.exists(PUBLIC_URL_PATH):
-    with open(PUBLIC_URL_PATH, "r") as f:
-        PUBLIC_URL = f.read().strip()
-else:
-    PUBLIC_URL = os.getenv("PUBLIC_URL", "")
+PUBLIC_URL = os.getenv("PUBLIC_URL", "")
 
 if not TOKEN:
-    raise RuntimeError("TOKEN is required in .env")
-if not PUBLIC_URL:
-    print("Warning: PUBLIC_URL not set. Webhook may not work automatically.")
+    raise RuntimeError("TOKEN is required")
 
 BOT_NAME = "Vocabulary with Mr. Korsh"
-print("Bot Name:", BOT_NAME)
-print("Bot token:", TOKEN)
-print("Public URL:", PUBLIC_URL)
 
-# ---------------- File paths ----------------
+# ==================================================
+# PATHS (ROOT LEVEL ONLY)
+# ==================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
+
 WORDS_FILE = os.path.join(DATA_DIR, "words.json")
 PHRASES_FILE = os.path.join(DATA_DIR, "phrases.json")
 TRACK_FILE = os.path.join(BASE_DIR, "tracking.json")
 
-# ---------------- Helpers ----------------
-def load_json(file_path: str) -> Any:
-    if os.path.exists(file_path):
-        with open(file_path, "r", encoding="utf-8") as f:
-            try:
-                return json.load(f)
-            except Exception:
-                return {}
-    return {}
+os.makedirs(DATA_DIR, exist_ok=True)
 
-def save_json(file_path: str, data: Any):
-    with open(file_path, "w", encoding="utf-8") as f:
+# ==================================================
+# JSON HELPERS
+# ==================================================
+def load_json(path: str) -> Any:
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def save_json(path: str, data: Any):
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-# ---------------- Tracking ----------------
-def track_user(user_id: int):
+
+# ==================================================
+# TRACKING (FINAL DESIGN)
+# ==================================================
+def track_activity(user_id: int, word: str | None = None):
     data = load_json(TRACK_FILE)
-    if not isinstance(data, dict):
-        data = {}
-    users = data.get("users", [])
-    sid = str(user_id)
-    if sid not in users:
-        users.append(sid)
-        data["users"] = users
-        save_json(TRACK_FILE, data)
+
+    if "users" not in data or not isinstance(data.get("users"), dict):
+        data["users"] = {}
+
+    uid = str(user_id)
+
+    if uid not in data["users"]:
+        data["users"][uid] = {
+            "first_seen": time.strftime("%Y-%m-%d"),
+            "words": []
+        }
+
+    if word:
+        data["users"][uid]["words"].append(word.lower())
+
+    save_json(TRACK_FILE, data)
+
 
 def load_all_users():
     data = load_json(TRACK_FILE)
-    if isinstance(data, dict):
-        return list(data.get("users", []))
+    if "users" in data:
+        return list(data["users"].keys())
     return []
 
-# ---------------- Translation ----------------
+
+# ==================================================
+# TRANSLATION
+# ==================================================
 def detect_uzbek(text: str) -> bool:
     if not text:
         return False
+
     for ch in text:
-        if "\u0400" <= ch <= "\u04FF":  # Cyrillic range
+        if "\u0400" <= ch <= "\u04FF":
             return True
-    lower = text.lower()
-    uz_tokens = {"men", "sen", "biz", "siz", "ular", "va", "yoq", "yo'q",
-                 "kitob", "rahmat", "salom", "yaxshi", "bor", "yo'qlik",
-                 "qanday", "iltimos", "olma", "ot", "it", "bolalar"}
-    for tok in lower.split():
+
+    uz_tokens = {
+        "men", "sen", "biz", "siz", "ular", "va", "yo'q", "rahmat",
+        "salom", "yaxshi", "bor", "qanday", "iltimos"
+    }
+
+    for tok in text.lower().split():
         if tok.strip(".,!?;:") in uz_tokens:
             return True
+
     return False
 
+
 def translate_dynamic(text: str):
-    if not text.strip():
-        return None, "unknown", "unknown"
     is_uz = detect_uzbek(text)
     try:
         if is_uz:
-            return GoogleTranslator(source="uz", target="en").translate(text), "uz", "en"
-        else:
-            return GoogleTranslator(source="auto", target="uz").translate(text), "auto", "uz"
-    except Exception as e:
-        print("Translation error:", e)
-        return None, ("uz" if is_uz else "auto"), ("en" if is_uz else "uz")
+            return GoogleTranslator(source="uz", target="en").translate(text)
+        return GoogleTranslator(source="auto", target="uz").translate(text)
+    except Exception:
+        return "❌ Translation failed"
 
-# ---------------- Word lookup ----------------
+
+# ==================================================
+# WORD DATABASE
+# ==================================================
 def find_word_info(word: str) -> Optional[dict]:
     words = load_json(WORDS_FILE)
-    if not isinstance(words, dict):
-        return None
-    return words.get(word.lower())
+    if isinstance(words, dict):
+        return words.get(word.lower())
+    return None
 
-def format_word_response(word: str, translation: str, info: Optional[dict] = None) -> str:
-    response = f"📝 Word: *{word}*\n🔤 Translation: *{translation}*\n"
-    if info:
-        if info.get("part_of_speech"):
-            response += f"📚 Part of Speech: {info['part_of_speech']}\n"
-        if info.get("level"):
-            response += f"⭐ Level: {info['level']}\n"
-        if info.get("prefixes"):
-            response += f"➕ Prefixes: {', '.join(info['prefixes'])}\n"
-        if info.get("suffixes"):
-            response += f"➖ Suffixes: {', '.join(info['suffixes'])}\n"
-        if info.get("singular_plural"):
-            response += f"👥 Singular/Plural: {info['singular_plural']}\n"
-        if info.get("examples"):
-            response += "📖 Examples:\n"
-            for ex in info['examples']:
-                response += f" - {ex}\n"
-        if info.get("synonyms"):
-            response += f"💡 Synonyms: {', '.join(info['synonyms'])}\n"
-    return response.strip()
 
-# ---------------- Bot ----------------
+def format_word_response(word: str, translation: str, info: Optional[dict]):
+    msg = f"📝 *{word}*\n🔤 *{translation}*\n"
+    if not info:
+        return msg
+
+    if info.get("part_of_speech"):
+        msg += f"📚 {info['part_of_speech']}\n"
+    if info.get("examples"):
+        msg += "📖 Examples:\n"
+        for ex in info["examples"]:
+            msg += f"- {ex}\n"
+    return msg
+
+
+# ==================================================
+# BOT INIT
+# ==================================================
 bot = TeleBot(TOKEN, parse_mode="Markdown")
 
-# ---------------- Start command ----------------
-def send_main_menu(chat_id, first_name=None):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("🌐 Translate a Word", "🗣 Learn a Phrase")
-    greeting = f"Hello {first_name}!\nWelcome to *{BOT_NAME}*.\nChoose an option below:" if first_name else f"Welcome to *{BOT_NAME}*.\nChoose an option below:"
-    bot.send_message(chat_id, greeting, reply_markup=markup)
 
+# ==================================================
+# UI
+# ==================================================
+def main_menu(chat_id, name=None):
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.row("🌐 Translate a Word", "🗣 Learn a Phrase")
+
+    text = f"Hello {name}! 👋\nWelcome to *{BOT_NAME}*" if name else f"Welcome to *{BOT_NAME}*"
+    bot.send_message(chat_id, text, reply_markup=kb)
+
+
+# ==================================================
+# HANDLERS
+# ==================================================
 @bot.message_handler(commands=["start"])
-def cmd_start(message: types.Message):
-    track_user(message.from_user.id)
-    send_main_menu(message.chat.id, message.from_user.first_name)
+def start_cmd(message: types.Message):
+    track_activity(message.from_user.id)
+    main_menu(message.chat.id, message.from_user.first_name)
 
-# ---------------- Main message handler ----------------
-@bot.message_handler(func=lambda msg: True)
+
+@bot.message_handler(func=lambda m: True)
 def main_handler(message: types.Message):
     text = message.text.strip()
-    
-    if text == "🌐 Translate a Word":
-        msg = bot.send_message(message.chat.id, "Please enter the word to translate (English or Uzbek):")
-        bot.register_next_step_handler(msg, translate_word)
 
-    elif text == "🗣 Learn a Phrase":
+    if text == "🌐 Translate a Word":
+        msg = bot.send_message(message.chat.id, "Enter a word (EN / UZ):")
+        bot.register_next_step_handler(msg, translate_word)
+        return
+
+    if text == "🗣 Learn a Phrase":
         phrases = load_json(PHRASES_FILE)
         if not phrases:
-            bot.send_message(message.chat.id, "No phrase topics found.")
+            bot.send_message(message.chat.id, "No phrases available")
             return
-        markup = types.InlineKeyboardMarkup()
-        for key in phrases.keys():
-            markup.add(types.InlineKeyboardButton(key, callback_data=f"phrase_topic:{key}"))
-        bot.send_message(message.chat.id, "Select a phrase topic:", reply_markup=markup)
-    
-    else:
-        # If user types any other text, treat it as a word translation
-        translate_word(message)
+        kb = types.InlineKeyboardMarkup()
+        for k in phrases:
+            kb.add(types.InlineKeyboardButton(k, callback_data=f"phrase:{k}"))
+        bot.send_message(message.chat.id, "Choose a topic:", reply_markup=kb)
+        return
 
+    translate_word(message)
+
+
+# ==================================================
+# TRANSLATE WORD
+# ==================================================
 def translate_word(message: types.Message):
     word = message.text.strip()
+    track_activity(message.from_user.id, word)
+
     info = find_word_info(word)
     if info:
         translation = info.get("translation", word)
         response = format_word_response(word, translation, info)
     else:
-        translation, _, _ = translate_dynamic(word)
-        response = f"📝 Word: *{word}*\n🔤 Translation: *{translation}*"
+        translation = translate_dynamic(word)
+        response = f"📝 *{word}*\n🔤 *{translation}*"
+
     bot.send_message(message.chat.id, response)
-    # Show main menu again
-    send_main_menu(message.chat.id)
+    main_menu(message.chat.id)
 
-# ---------------- Inline Callback handling ----------------
-@bot.callback_query_handler(func=lambda call: True)
-def callback_handler(call: types.CallbackQuery):
-    data = call.data
-    if data.startswith("phrase_topic:"):
-        topic = data.split(":")[1]
-        phrases_data = load_json(PHRASES_FILE)
-        phrases_list = phrases_data.get(topic, [])
-        if phrases_list:
-            text = f"📌 Phrases for *{topic}*:\n"
-            for p in phrases_list:
-                text += f"- {p}\n"
-        else:
-            text = "No phrases found for this topic."
-        bot.send_message(call.message.chat.id, text)
 
-# ---------------- Quiz sending ----------------
+# ==================================================
+# PHRASES
+# ==================================================
+@bot.callback_query_handler(func=lambda c: c.data.startswith("phrase:"))
+def phrase_handler(call: types.CallbackQuery):
+    topic = call.data.split(":", 1)[1]
+    phrases = load_json(PHRASES_FILE).get(topic, [])
+
+    if not phrases:
+        bot.send_message(call.message.chat.id, "No phrases found")
+        return
+
+    text = f"📌 *{topic}* phrases:\n"
+    for p in phrases:
+        text += f"- {p}\n"
+
+    bot.send_message(call.message.chat.id, text)
+
+
+# ==================================================
+# QUIZ SYSTEM (SAFE MODE)
+# ==================================================
 def send_quiz_to_user(user_id: int):
     words = load_json(WORDS_FILE)
     if not words:
         return
-    word, info = random.choice(list(words.items()))
-    bot.send_message(user_id, f"🎯 Quiz time! Translate this word: *{word}*", parse_mode="Markdown")
 
-# ---------------- Quiz Dispatcher Thread ----------------
-def quiz_dispatcher_loop(interval_hours=12):
+    try:
+        word = random.choice(list(words.keys()))
+        bot.send_message(
+            user_id,
+            f"🎯 Quiz time! Translate this word:\n*{word}*",
+            parse_mode="Markdown"
+        )
+    except Exception as e:
+        print("Quiz failed for", user_id, e)
+
+
+def quiz_loop(interval_hours=12):
     while True:
-        users = load_all_users()
-        for uid in users:
-            try:
-                send_quiz_to_user(int(uid))
-            except Exception as e:
-                print("Failed to send quiz to", uid, e)
+        for uid in load_all_users():
+            send_quiz_to_user(int(uid))
         time.sleep(interval_hours * 3600)
 
-def start_quiz_thread():
-    t = threading.Thread(target=quiz_dispatcher_loop, args=(12,), daemon=True)
-    t.start()
 
-# ---------------- Flask webhook ----------------
+def start_quiz_thread():
+    threading.Thread(target=quiz_loop, daemon=True).start()
+
+
+# ==================================================
+# FLASK WEBHOOK
+# ==================================================
 app = Flask(__name__)
 WEBHOOK_PATH = f"/webhook/{TOKEN}"
 
-@app.route("/", methods=["GET"])
+
+@app.route("/")
 def index():
-    return f"{BOT_NAME} is running."
+    return f"{BOT_NAME} is running"
+
 
 @app.route(WEBHOOK_PATH, methods=["POST"])
-def telegram_webhook():
+def webhook():
     if request.headers.get("content-type") != "application/json":
         abort(403)
-    json_str = request.get_data().decode("utf-8")
-    try:
-        update = types.Update.de_json(json_str)
-        bot.process_new_updates([update])
-    except Exception as e:
-        print("Failed to process update:", e)
+    update = types.Update.de_json(request.get_json())
+    bot.process_new_updates([update])
     return "", 200
+
 
 def set_webhook():
     if not PUBLIC_URL:
-        print("PUBLIC_URL not set; skipping webhook.")
         return
-    url = f"{PUBLIC_URL.rstrip('/')}{WEBHOOK_PATH}"
-    try:
-        bot.remove_webhook()
-        result = bot.set_webhook(url=url)
-        if result:
-            print("✅ Webhook successfully set to", url)
-        else:
-            print("❌ Failed to set webhook. Telegram rejected the URL:", url)
-    except Exception as e:
-        print("❌ Exception while setting webhook:", e)
+    bot.remove_webhook()
+    bot.set_webhook(url=f"{PUBLIC_URL}{WEBHOOK_PATH}")
 
-# ---------------- Start ----------------
+
+# ==================================================
+# START
+# ==================================================
 if __name__ == "__main__":
     start_quiz_thread()
     set_webhook()
-    port = int(os.environ.get("PORT", 5000))
-
-    app.run(host="0.0.0.0", port=port)
-
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
