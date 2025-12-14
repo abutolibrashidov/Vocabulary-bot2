@@ -1,0 +1,353 @@
+{
+  "excited": {
+    "translation": "hayajonlangan",
+    "part_of_speech": "adjective",
+    "level": "B1",
+    "prefixes": [],
+    "suffixes": ["-ly"],
+    "singular_plural": "N/A",
+    "examples": [
+      "She was very excited about her trip.",
+      "I’m excited to see the new movie."
+    ],
+    "synonyms": ["thrilled", "eager", "enthusiastic", "delighted"]
+  },
+  "listen": {
+    "translation": "tinglamoq",
+    "part_of_speech": "verb",
+    "level": "A1",
+    "prefixes": [],
+    "suffixes": ["-ing", "-ed"],
+    "singular_plural": "N/A",
+    "examples": [
+      "Please listen carefully.",
+      "He is listening to music."
+    ],
+    "synonyms": ["hear", "attend", "heed", "pay attention"]
+  },
+  "quickly": {
+    "translation": "tezda",
+    "part_of_speech": "adverb",
+    "level": "A2",
+    "prefixes": [],
+    "suffixes": [],
+    "singular_plural": "N/A",
+    "examples": [
+      "She finished her homework quickly.",
+      "Run quickly or you’ll miss the bus."
+    ],
+    "synonyms": ["rapidly", "swiftly", "promptly", "speedily"]
+  },
+  "mountain": {
+    "translation": "tog‘",
+    "part_of_speech": "noun",
+    "level": "A1",
+    "prefixes": [],
+    "suffixes": ["-s"],
+    "singular_plural": "singular/plural",
+    "examples": [
+      "We climbed a high mountain.",
+      "Mountains are covered with snow in winter."
+    ],
+    "synonyms": ["peak", "hill", "summit", "ridge"]
+  },
+  "improve": {
+    "translation": "yaxshilamoq",
+    "part_of_speech": "verb",
+    "level": "B1",
+    "prefixes": ["im-"],
+    "suffixes": ["-ed", "-ing"],
+    "singular_plural": "N/A",
+    "examples": [
+      "You need to improve your English skills.",
+      "Her health is improving day by day."
+    ],
+    "synonyms": ["enhance", "develop", "progress", "refine"]
+  },
+  "weather": {
+    "translation": "ob-havo",
+    "part_of_speech": "noun",
+    "level": "A1",
+    "prefixes": [],
+    "suffixes": [],
+    "singular_plural": "N/A",
+    "examples": [
+      "The weather is nice today.",
+      "Bad weather delayed our flight."
+    ],
+    "synonyms": ["climate", "atmosphere", "conditions", "forecast"]
+  },
+  "artist": {
+    "translation": "rassom",
+    "part_of_speech": "noun",
+    "level": "A2",
+    "prefixes": [],
+    "suffixes": ["-s"],
+    "singular_plural": "singular/plural",
+    "examples": [
+      "The artist painted a beautiful picture.",
+      "Many artists live in this city."
+    ],
+    "synonyms": ["painter", "creator", "illustrator", "sculptor"]
+  },
+  "enjoy": {
+    "translation": "rohatlanmoq",
+    "part_of_speech": "verb",
+    "level": "A1",
+    "prefixes": [],
+    "suffixes": ["-ed", "-ing"],
+    "singular_plural": "N/A",
+    "examples": [
+      "I enjoy listening to music.",
+      "They enjoyed their vacation."
+    ],
+    "synonyms": ["like", "appreciate", "relish", "savor"]
+  },
+  "kindness": {
+    "translation": "mehribonlik",
+    "part_of_speech": "noun",
+    "level": "B1",
+    "prefixes": [],
+    "suffixes": [],
+    "singular_plural": "N/A",
+    "examples": [
+      "Her kindness impressed everyone.",
+      "A little kindness can change someone’s day."
+    ],
+    "synonyms": ["compassion", "goodness", "warmth", "benevolence"]
+  },
+  "comfortable": {
+    "translation": "qulay",
+    "part_of_speech": "adjective",
+    "level": "B1",
+    "prefixes": [],
+    "suffixes": ["-ly"],
+    "singular_plural": "N/A",
+    "examples": [
+      "This chair is very comfortable.",
+      "I feel comfortable in my new home."
+    ],
+    "synonyms": ["cozy", "pleasant", "relaxed", "snug"]
+  },
+  "brave": {
+    "translation": "jasur",
+    "part_of_speech": "adjective",
+    "level": "A2",
+    "prefixes": [],
+    "suffixes": ["-ly", "-ness"],
+    "singular_plural": "N/A",
+    "examples": [
+      "He was brave enough to tell the truth.",
+      "Firefighters are very brave people."
+    ],
+    "synonyms": ["courageous", "fearless", "bold", "valiant"]
+  },
+  "decision": {
+    "translation": "qaror",
+    "part_of_speech": "noun",
+    "level": "B1",
+    "prefixes": ["de-"],
+    "suffixes": ["-s"],
+    "singular_plural": "singular/plural",
+    "examples": [
+      "It was a difficult decision to make.",
+      "They made the right decision."
+    ],
+    "synonyms": ["choice", "judgment", "resolution", "determination"]
+  },
+  "helpful": {
+    "translation": "foydali, yordam beruvchi",
+    "part_of_speech": "adjective",
+    "level": "A2",
+    "prefixes": [],
+    "suffixes": ["-ly", "-ness"],
+    "singular_plural": "N/A",
+    "examples": [
+      "He was very helpful during our move.",
+      "This book is helpful for learning English."
+    ],
+    "synonyms": ["supportive", "useful", "kind", "considerate"]
+  },
+  "create": {
+    "translation": "yaratmoq",
+    "part_of_speech": "verb",
+    "level": "A2",
+    "prefixes": [],
+    "suffixes": ["-ed", "-ing"],
+    "singular_plural": "N/A",
+    "examples": [
+      "She created a beautiful design.",
+      "We need to create a plan for tomorrow."
+    ],
+    "synonyms": ["produce", "design", "build", "invent"]
+  },
+  "beautiful": {
+    "translation": "go‘zal, chiroyli",
+    "part_of_speech": "adjective",
+    "level": "A1",
+    "prefixes": [],
+    "suffixes": ["-ly", "-ness"],
+    "singular_plural": "N/A",
+    "examples": [
+      "It’s a beautiful day today.",
+      "She has a beautiful smile."
+    ],
+    "synonyms": ["pretty", "lovely", "attractive", "gorgeous"]
+  },
+  "travel": {
+    "translation": "sayohat qilmoq",
+    "part_of_speech": "verb",
+    "level": "A2",
+    "prefixes": [],
+    "suffixes": ["-ed", "-ing"],
+    "singular_plural": "N/A",
+    "examples": [
+      "I love to travel around the world.",
+      "She is traveling to Paris next week."
+    ],
+    "synonyms": ["journey", "explore", "tour", "voyage"]
+  },
+  "quiet": {
+    "translation": "tinch, sokin",
+    "part_of_speech": "adjective",
+    "level": "A1",
+    "prefixes": [],
+    "suffixes": ["-ly", "-ness"],
+    "singular_plural": "N/A",
+    "examples": [
+      "The library is a quiet place.",
+      "Please be quiet while others are studying."
+    ],
+    "synonyms": ["calm", "silent", "peaceful", "still"]
+  },
+  "teacher": {
+    "translation": "o‘qituvchi",
+    "part_of_speech": "noun",
+    "level": "A1",
+    "prefixes": [],
+    "suffixes": ["-s"],
+    "singular_plural": "singular/plural",
+    "examples": [
+      "My teacher helps me learn English.",
+      "Teachers work very hard."
+    ],
+    "synonyms": ["instructor", "educator", "tutor", "mentor"]
+  },
+  "memory": {
+    "translation": "xotira",
+    "part_of_speech": "noun",
+    "level": "B1",
+    "prefixes": [],
+    "suffixes": ["-ies"],
+    "singular_plural": "singular/plural",
+    "examples": [
+      "He has a good memory for names.",
+      "Childhood memories are precious."
+    ],
+    "synonyms": ["recollection", "remembrance", "mind", "retention"]
+  },
+  "hungry": {
+    "translation": "och",
+    "part_of_speech": "adjective",
+    "level": "A1",
+    "prefixes": [],
+    "suffixes": ["-ly", "-ness"],
+    "singular_plural": "N/A",
+    "examples": [
+      "I’m very hungry after school.",
+      "They were hungry and tired."
+    ],
+    "synonyms": ["starving", "empty", "famished", "appetent"]
+  },
+  "wonderful": {
+    "translation": "ajoyib",
+    "part_of_speech": "adjective",
+    "level": "A2",
+    "prefixes": [],
+    "suffixes": ["-ly", "-ness"],
+    "singular_plural": "N/A",
+    "examples": [
+      "We had a wonderful time at the park.",
+      "That’s a wonderful idea!"
+    ],
+    "synonyms": ["amazing", "fantastic", "great", "excellent"]
+  },
+  "discover": {
+    "translation": "kashf etmoq",
+    "part_of_speech": "verb",
+    "level": "B1",
+    "prefixes": ["dis-"],
+    "suffixes": ["-ed", "-ing"],
+    "singular_plural": "N/A",
+    "examples": [
+      "They discovered a new planet.",
+      "He discovered that he was wrong."
+    ],
+    "synonyms": ["find", "uncover", "reveal", "detect"]
+  },
+  "strength": {
+    "translation": "kuch, quvvat",
+    "part_of_speech": "noun",
+    "level": "B1",
+    "prefixes": [],
+    "suffixes": [],
+    "singular_plural": "singular/plural",
+    "examples": [
+      "She showed great strength during the crisis.",
+      "Physical strength is important for this job."
+    ],
+    "synonyms": ["power", "force", "might", "energy"]
+  },
+  "quick": {
+    "translation": "tez",
+    "part_of_speech": "adjective",
+    "level": "A1",
+    "prefixes": [],
+    "suffixes": ["-ly", "-ness"],
+    "singular_plural": "N/A",
+    "examples": [
+      "You need to be quick to catch the train.",
+      "He gave me a quick answer."
+    ],
+    "synonyms": ["fast", "rapid", "speedy", "swift"]
+  },
+  "friendly": {
+    "translation": "do‘stona",
+    "part_of_speech": "adjective",
+    "level": "A2",
+    "prefixes": [],
+    "suffixes": [],
+    "singular_plural": "N/A",
+    "examples": [
+      "He is a very friendly person.",
+      "The hotel staff were friendly and helpful."
+    ],
+    "synonyms": ["kind", "pleasant", "warm", "welcoming"]
+  },
+  "happiness": {
+    "translation": "baxt, quvonch",
+    "part_of_speech": "noun",
+    "level": "B1",
+    "prefixes": [],
+    "suffixes": [],
+    "singular_plural": "N/A",
+    "examples": [
+      "Money can’t buy happiness.",
+      "Her smile shows her happiness."
+    ],
+    "synonyms": ["joy", "delight", "pleasure", "contentment"]
+  },
+  "problem": {
+    "translation": "muammo",
+    "part_of_speech": "noun",
+    "level": "A1",
+    "prefixes": [],
+    "suffixes": ["-s"],
+    "singular_plural": "singular/plural",
+    "examples": [
+      "We have a problem to solve.",
+      "No problem, I can help you."
+    ],
+    "synonyms": ["issue", "difficulty", "trouble", "challenge"]
+  }
+}
