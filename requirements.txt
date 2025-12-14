@@ -2,3 +2,5 @@ pyTelegramBotAPI
 deep-translator
 Flask
 requests
+python-dotenv
+
