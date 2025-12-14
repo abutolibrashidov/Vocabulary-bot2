@@ -10,7 +10,6 @@ from flask import Flask, request, abort
 from telebot import TeleBot, types
 from deep_translator import GoogleTranslator
 from dotenv import load_dotenv
-from services.tracker import Tracker
 
 tracker = Tracker()
 
@@ -264,3 +263,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
 
     app.run(host="0.0.0.0", port=port)
+
